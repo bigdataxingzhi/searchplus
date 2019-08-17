@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Content-language" content="zh-CN"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="pc">
+    <link href="/static/rent-map.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.css" />
+</head>
+<body>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=Oi2uijgpb8tILz7Ys9Q48KbmmfHDSpjK"></script>
+<script type="text/javascript" src="/static/baidu-map/TextIconOverlay.js"></script>
+<script type="text/javascript" src="/static/baidu-map/MarkerClusterer.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/library/SearchInfoWindow/1.5/src/SearchInfoWindow_min.js"></script>
+<script type="text/javascript" src="/static/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/rent-map.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    // 初始化加载地图数据
+    var city = [[${city}]],//从model中取出city数据
+        regions = [[${regions}]],//从model中取出该城市对应的regions数据
+        aggData = [[${aggData}]];//从model中取出aggData
+//在rent-map.js中实现.
+    load(city, regions, aggData);
+</script>
+<div id="allmap" class="wrapper">
+</div>
+</body>
+</html>
+

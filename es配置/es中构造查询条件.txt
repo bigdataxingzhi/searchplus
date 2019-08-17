@@ -1,0 +1,67 @@
+ BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+        boolQuery.filter(
+                QueryBuilders.termQuery(HouseIndexKey.CITY_EN_NAME, rentSearch.getCityEnName())
+        );
+
+        if (rentSearch.getRegionEnName() != null && !"*".equals(rentSearch.getRegionEnName())) {
+            boolQuery.filter(
+                    QueryBuilders.termQuery(HouseIndexKey.REGION_EN_NAME, rentSearch.getRegionEnName())
+            );
+        }
+
+        RentValueBlock area = RentValueBlock.matchArea(rentSearch.getAreaBlock());
+        if (!RentValueBlock.ALL.equals(area)) {
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery(HouseIndexKey.AREA);
+            if (area.getMax() > 0) {
+                rangeQueryBuilder.lte(area.getMax());
+            }
+            if (area.getMin() > 0) {
+                rangeQueryBuilder.gte(area.getMin());
+            }
+            boolQuery.filter(rangeQueryBuilder);
+        }
+
+        RentValueBlock price = RentValueBlock.matchPrice(rentSearch.getPriceBlock());
+        if (!RentValueBlock.ALL.equals(price)) {
+            RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery(HouseIndexKey.PRICE);
+            if (price.getMax() > 0) {
+                rangeQuery.lte(price.getMax());
+            }
+            if (price.getMin() > 0) {
+                rangeQuery.gte(price.getMin());
+            }
+            boolQuery.filter(rangeQuery);
+        }
+
+        if (rentSearch.getDirection() > 0) {
+            boolQuery.filter(
+                    QueryBuilders.termQuery(HouseIndexKey.DIRECTION, rentSearch.getDirection())
+            );
+        }
+
+        if (rentSearch.getRentWay() > -1) {
+            boolQuery.filter(
+                QueryBuilders.termQuery(HouseIndexKey.RENT_WAY, rentSearch.getRentWay())
+            );
+        }
+
+/**        boolQuery.should(
+               QueryBuilders.matchQuery(HouseIndexKey.TITLE, rentSearch.getKeywords())
+                       .boost(2.0f)
+      );
+*/
+        //此处为 must,则multiMatchQuery中的条件都应当满足.
+        boolQuery.should(
+                // 相对于matchQuery，multiMatchQuery针对的是多个field，也就是说，
+                // 当multiMatchQuery中，fieldNames参数只有一个时，其作用与matchQuery相当；
+                // 而当fieldNames有多个参数时，如field1和field2，
+                // 那查询的结果中，要么field1中包含text，要么field2中包含text。
+                QueryBuilders.multiMatchQuery(rentSearch.getKeywords(),
+                        HouseIndexKey.TITLE,
+                        HouseIndexKey.TRAFFIC,
+                        HouseIndexKey.DISTRICT,
+                        HouseIndexKey.ROUND_SERVICE,
+                        HouseIndexKey.SUBWAY_LINE_NAME,
+                        HouseIndexKey.SUBWAY_STATION_NAME
+                ));
